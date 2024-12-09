@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
 import vttp5_ssf_b2_practiceAssessment.constant.Constant;
@@ -70,10 +71,94 @@ public class NewsService {
     }
 
     // task 3 
+    // helper method 
+    // get articles from API using id 
+    public Article getArticleFromAPI(String id) {
+
+        RestTemplate restTemplate = new RestTemplate(); 
+
+        String articleData = restTemplate.getForObject(Constant.cryptoUrl, String.class);
+
+        StringReader sReader = new StringReader(articleData);
+        JsonReader jReader = Json.createReader(sReader);
+        JsonObject jObject = jReader.readObject();
+        
+        JsonArray jDataArray = jObject.getJsonArray("Data");
+
+        for (JsonValue jValue : jDataArray) {
+            
+            JsonObject jEntry = jValue.asJsonObject();
+
+            if (jEntry.getString("id").equals(id)) {
+
+                Article article = new Article(); 
+
+                article.setId(jEntry.getString("id"));
+                article.setPublished_on(jEntry.getInt("published_on"));
+                article.setTitle(jEntry.getString("title"));
+                article.setUrl(jEntry.getString("url"));
+                article.setImageurl(jEntry.getString("imageurl"));
+                article.setBody(jEntry.getString("body"));
+                article.setTags(jEntry.getString("tags"));
+                article.setCategories(jEntry.getString("categories"));
+
+                // System.out.println(article);
+
+                return article;
+
+            }
+
+        }
+
+        System.out.println("Article with ID " + id + "not found. :((");
+        return null;
+
+    }
+
+    // task 3 
     // saves articles to Redis 
     public void saveArticles(List<Article> articles) {
 
-        
+        // // testing statement
+        // System.out.println(articles);
+
+        // for each Article a in articles 
+        for (Article a : articles) {
+
+            // Article POJO --> JSON formatted string
+            String articleStringData = POJOToJsonString(a); 
+
+            // get ID to save as hashkey 
+            String hashKey = a.getId();
+
+            // save to redis 
+            newsRepo.saveToRedis(hashKey, articleStringData);
+
+            System.out.printf("Saved Article with ID: %s to Redis \n", hashKey);
+
+        }
+
+    }
+
+    
+
+    // task 3 
+    // helper method 
+    // Article POJO --> JSON Formatted String (saving to Redis)
+    public String POJOToJsonString(Article article) { 
+
+        JsonObjectBuilder builder = Json.createObjectBuilder()
+                                        .add("id", article.getId())
+                                        .add("published_on", article.getPublished_on())
+                                        .add("title", article.getTitle())
+                                        .add("url", article.getUrl())
+                                        .add("imageurl", article.getImageurl())
+                                        .add("body", article.getBody())
+                                        .add("tags", article.getTags())
+                                        .add("categories", article.getCategories());
+
+        JsonObject articleObject = builder.build(); 
+        return articleObject.toString(); 
 
     }
 

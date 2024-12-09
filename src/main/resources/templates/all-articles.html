@@ -14,7 +14,9 @@
 
     <h1>Crypto News of the Day</h1>
 
-    <form th:action"@{/articles}" th:ibject="@{article}">
+    <!-- <form method="POST" th:action="@{/contact}" th:object="${userForm}"> -->
+
+    <form method="POST" th:action="@{/articles}" th:object="${article}">
 
         <button type="submit">Save</button>
 
@@ -40,7 +42,10 @@
 
                 <p><strong>Categories: </strong><span th:text="${article.categories}"></span></p>
 
-                <input type="checkbox" id="save" name="save">
+                <!-- <input type="checkbox" id="save" name="save" th:value="${article.id}">
+                <label for="save">Save</label> -->
+
+                <input type="checkbox" name="articleIds" id="save"th:value="${article.id}">
                 <label for="save">Save</label>
 
             </div>

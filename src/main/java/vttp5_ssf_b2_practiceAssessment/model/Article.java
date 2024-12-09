@@ -11,8 +11,12 @@ public class Article {
     private String tags; 
     private String categories;
 
+    private Boolean save;
+    // TODO remove save attribute
+
     // constructors
     public Article() {
+        this.save = false;
     } 
 
     public Article(String id, Integer published_on, String title, String url, String imageurl, String body, String tags,
@@ -25,6 +29,8 @@ public class Article {
         this.body = body;
         this.tags = tags;
         this.categories = categories;
+
+        this.save = false;
     }
 
     // getters and setters 
@@ -90,6 +96,14 @@ public class Article {
 
     public void setCategories(String categories) {
         this.categories = categories;
+    }
+
+    public Boolean getSave() {
+        return save;
+    }
+
+    public void setSave(Boolean save) {
+        this.save = save;
     }
 
     // toString() method
