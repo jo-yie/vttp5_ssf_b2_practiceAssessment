@@ -14,6 +14,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonReader;
 import jakarta.json.JsonValue;
+import vttp5_ssf_b2_practiceAssessment.Exception.ArticleNotFoundException;
 import vttp5_ssf_b2_practiceAssessment.constant.Constant;
 import vttp5_ssf_b2_practiceAssessment.model.Article;
 import vttp5_ssf_b2_practiceAssessment.repo.NewsRepo;
@@ -140,8 +141,6 @@ public class NewsService {
 
     }
 
-    
-
     // task 3 
     // helper method 
     // Article POJO --> JSON Formatted String (saving to Redis)
@@ -161,6 +160,50 @@ public class NewsService {
         return articleObject.toString(); 
 
     }
+
+    // task 4 
+    // retrieve article from redis with ID
+    public Article retrieveArticle(String id) {
+
+        String jArticleString = newsRepo.getArticleFromRedis(id);
+
+        // if article doesn't exist in redis 
+        if (jArticleString == null || jArticleString.isEmpty()) {
+            throw new ArticleNotFoundException(id);
+        }
+
+        // JSON String from redis --> Article POJO 
+        Article article = JsonStringToPOJO(jArticleString);
+
+        return article;
+
+    }
+
+    // task 4 
+    // helper method 
+    // JSON formatted String --> Article POJO 
+    public Article JsonStringToPOJO(String articleRaw) {
+
+        StringReader sr = new StringReader(articleRaw);
+        JsonReader jr = Json.createReader(sr);
+        JsonObject jo = jr.readObject();
+
+        // map JSON fields into Article POJO 
+        Article article = new Article(
+            jo.getString("id"),
+            jo.getInt("published_on"),
+            jo.getString("title"),
+            jo.getString("url"),
+            jo.getString("imageurl"),
+            jo.getString("body"),
+            jo.getString("tags"),
+            jo.getString("categories")
+        ); 
+
+        return article;
+
+    }
+
 
     
 }

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -47,7 +46,7 @@ public class NewsController {
         // if no articles are selected 
         if (articleIds == null || articleIds.isEmpty()) {
             System.out.println("No articles selected");
-            return "articles";
+            return "redirect:/";
 
         }
 
@@ -67,8 +66,7 @@ public class NewsController {
         newsService.saveArticles(articles);
 
         // return original list of articles again
-        // TODO html view 
-        return "articles";
+        return "redirect:/";
 
     }
     
